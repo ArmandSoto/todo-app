@@ -1,9 +1,9 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Task from './Task'
 
 export default function TodoList(){
 
-    const [ tasks, setTasks ] = useState([])
+    const [ tasks, setTasks ] = useState(JSON.parse(localStorage.getItem('items'))|| [])
     const [ currentTask, setCurrentTask ] = useState({
         name: "",
         id: "", 
@@ -15,17 +15,27 @@ export default function TodoList(){
                 key={index}
                 name={task.name}
                 id={index + 1}
+                deleteTask={handleDeleteTask}
             />
             
     })
 
+
+useEffect(() => {   
+    localStorage.setItem('items', JSON.stringify(tasks))
+}, [tasks])
+
+
     function handleSubmit(e){
         e.preventDefault()
-        addTask()
-        
+        addTask()       
     }
 
-    //issues with the numbering
+    function handleDeleteTask(task){       
+        setTasks(prevTasks => {
+            return prevTasks.splice(task.id - 1, 1)
+        })
+    }
 
     function handleChange(e){
         setCurrentTask(
@@ -33,13 +43,14 @@ export default function TodoList(){
                 return {
                     ...prev,
                     name: e.target.value,
+                    id: tasks.length + 1,
+                    
                 }
             }
         )     
     }
 
-    function addTask(){
-        
+    function addTask(){ 
         setTasks(
             prevTasks => {
                 return [...prevTasks, currentTask]      
@@ -56,10 +67,10 @@ export default function TodoList(){
                        type="text"
                        name="task-name" 
                        onChange={handleChange}
-                       value={currentTask.name} 
+                       value={currentTask.name}
+                        
                 />
-                <button className="rounded-full h-12 w-12 bg-green-500 text-white text text-xl" >+</button>
-                
+                <button className="rounded-full h-12 w-12 bg-green-500 text-white text text-xl" > + </button>    
             </form>
                 <ul className="flex-column space-between">
                     {taskComponents}
