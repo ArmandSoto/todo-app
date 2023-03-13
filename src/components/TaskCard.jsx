@@ -1,5 +1,5 @@
 
-export default function Task(props){
+export default function TaskCard(props){
 
     //onClick used to be (e => {props.deleteTask(e.target)})
     

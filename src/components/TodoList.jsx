@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
-import Task from './Task'
+import TaskCard from './TaskCard'
+import NewTaskForm from './NewTaskForm'
 
 export default function TodoList(){
 
@@ -12,7 +13,7 @@ export default function TodoList(){
 
 
     const taskComponents = tasks.map((task, index) => {
-        return <Task 
+        return <TaskCard
                 key={index}
                 name={task.name}
                 id={task.id}
@@ -33,7 +34,8 @@ export default function TodoList(){
         setCurrentTask({
             name: "",
             id: "",
-        })       
+        })   
+        setTaskPaneIsActive(prev => !prev)    
     }
 
     function handleDeleteTask(taskID){    
@@ -80,41 +82,31 @@ export default function TodoList(){
         setTaskPaneIsActive(prev => !prev)
     }
     
-    function handleKeyPress(event){
-        if(event.key === 'Enter'){
-            setTaskPaneIsActive(prev => !prev)
-            
-        }
-    }
 
     return (
-        <div className={"flex-column justify-center border-2 w-96"}>
-            <form onSubmit={handleSubmit} className="flex space-x-4 items-center">
-                <div className={taskPaneIsActive ? "" : "hidden"}>
-                    <label htmlFor="task-name">Task:</label>
-                        <input className="border-2" 
-                            type="text"
-                            name="task-name" 
-                            onChange={handleChange}
-                            value={currentTask.name}
-                            onKeyDown={handleKeyPress}
-                            placeholder="Enter a Task..."    
-                        />
-                </div>
-            </form>
+        <div className={"flex-column border-2 w-2/3"}>
+            <div className={"flex border-2"}>
+                <button className="rounded-full h-12 w-12 bg-green-500 text-white text text-xl ml-5"
+                        onClick={handleClick} > + 
+                </button>    
+                <p className={tasks.length > 0 ? "hidden" : "leading-10 ml-5"}>You have no tasks currently</p>
+            </div>
+
+            {
+                taskPaneIsActive &&
+                <NewTaskForm
+                    handleSubmit={handleSubmit}
+                    handleChange={handleChange}
+                    currentTask={currentTask}
+                    
+                />
+            }                 
             
-            <div className={""}> {/* handles the background blur */}
                 <div className={"flex-column text-center"}>
-                    <div className={"flex border-2 justify-around"}>
-                        <p className={tasks.length > 0 ? "hidden" : "leading-10"}>You have no tasks currently</p>
-                        <button className="rounded-full h-12 w-12 bg-green-500 text-white text text-xl"
-                                onClick={handleClick} > + </button>    
-                    </div>
                     <ul className="flex-column space-between">
                             {taskComponents}
                     </ul>
                 </div>
-            </div>
         </div>
     )
 }
