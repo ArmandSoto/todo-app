@@ -9,8 +9,11 @@ export default function TodoList(){
     const [ tasks, setTasks ] = useState(JSON.parse(localStorage.getItem('items')) || [])
     const [ currentTask, setCurrentTask ] = useState({
         name: "",
-        id: "", 
+        id: "",
+        completed: false 
     })
+
+
     const [ taskPaneIsActive, setTaskPaneIsActive ] = useState(false)
 
 
@@ -75,8 +78,7 @@ export default function TodoList(){
     }
 
     function handleEditTask(taskId){
-        console.log(`Task ${taskId} is being edited`)
-        
+       
         setCurrentTask({
             name: tasks[taskId-1].name,
             id: tasks[taskId-1].id
@@ -104,7 +106,6 @@ export default function TodoList(){
         )     
     }
 
-
     function handleClick(){
         setTaskPaneIsActive(prev => !prev)
     }
@@ -112,8 +113,7 @@ export default function TodoList(){
 
     return (
         <div className={"flex-column border-2 w-1/3"}>
-
-            
+     
             <div className={"flex-column"}>
                 <ul className="flex-column space-between">
                         {taskComponents}

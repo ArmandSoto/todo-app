@@ -20,8 +20,10 @@ export default function TaskCard(props){
     
     return (
         <div className="border-2 shadow-lg rounded-lg my-2 p-4"  >
-            <li className= "flex " onMouseEnter={handleOnMouseEnter} onMouseLeave={handleOnMouseLeave}>
-                <p className="">{ props.id + ". " + props.name }  </p>
+            <li className= "flex" onMouseEnter={handleOnMouseEnter} onMouseLeave={handleOnMouseLeave}>
+
+                <input type="checkbox" className="mr-3" />
+                <p className="">{ props.id + ". " + props.name } </p>
    
                 {
                     showEllipsis && 
