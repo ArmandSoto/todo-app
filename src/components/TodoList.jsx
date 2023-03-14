@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
+import { PlusCircleIcon } from '@heroicons/react/24/solid'
 import TaskCard from './TaskCard'
 import NewTaskForm from './NewTaskForm'
+
 
 export default function TodoList(){
 
@@ -86,11 +88,12 @@ export default function TodoList(){
     return (
         <div className={"flex-column border-2 w-2/3"}>
             <div className={"flex border-2"}>
-                <button className="rounded-full h-12 w-12 bg-green-500 text-white text text-xl ml-5"
-                        onClick={handleClick} > + 
-                </button>    
-                <p className={tasks.length > 0 ? "hidden" : "leading-10 ml-5"}>You have no tasks currently</p>
+                
+                <PlusCircleIcon onClick={handleClick} className="h-8 w-8 text-emerald-400" />
+                <p className={tasks.length > 0 ? "hidden" : "ml-5"}>You have no tasks currently</p>
             </div>
+
+            
 
             {
                 taskPaneIsActive &&
@@ -102,7 +105,7 @@ export default function TodoList(){
                 />
             }                 
             
-                <div className={"flex-column text-center"}>
+                <div className={"flex-column"}>
                     <ul className="flex-column space-between">
                             {taskComponents}
                     </ul>
