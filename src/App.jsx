@@ -8,7 +8,7 @@ function App() {
   const [count, setCount] = useState(0)
 
   return (
-    <div className="flex justify-center">
+    <div className="flex justify-center text-base font-extralight tracking-wide ">
       <TodoList />
     </div>
   )

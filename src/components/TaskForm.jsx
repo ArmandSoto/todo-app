@@ -1,8 +1,8 @@
 
 
-export default function NewTaskForm(props){
+export default function TaskForm(props){
     return (
-        <form onSubmit={props.handleSubmit} className="flex">
+        <form onSubmit={props.handleSubmit} className="flex justify-around">
                 <div>
                     <label htmlFor="task-name">Task:</label>
                         <input className="border-2" 
