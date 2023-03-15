@@ -7,14 +7,13 @@ import TaskForm from './TaskForm'
 export default function TodoList(){
 
     const [ tasks, setTasks ] = useState(JSON.parse(localStorage.getItem('items')) || [])
+    const [ taskPaneIsActive, setTaskPaneIsActive ] = useState(false)
+    const [ tasksCompleted, setTaskCompleted ] = useState(0)
     const [ currentTask, setCurrentTask ] = useState({
         name: "",
         id: "",
         completed: false 
     })
-
-
-    const [ taskPaneIsActive, setTaskPaneIsActive ] = useState(false)
 
 
     const taskComponents = tasks.map((task, index) => {
@@ -24,6 +23,8 @@ export default function TodoList(){
                 id={task.id}
                 deleteTask={handleDeleteTask}
                 editTask={handleEditTask}
+                closePane={closePane}
+                isCompleted={task.isCompleted}
             />
             
     })
@@ -34,33 +35,46 @@ export default function TodoList(){
     }, [tasks])
 
 
-    function addTask(){ 
-        setTasks(
-            prevTasks => {
-                return [...prevTasks, currentTask]      
-            }
-        )
+    function closePane(){
+        if(taskPaneIsActive){
+            setTaskPaneIsActive(prev => !prev)
+        }
     }
+
+    function addTask(){
+        if(currentTask.name.trim().length > 0){
+            setTasks(
+                prevTasks => {
+                    return [...prevTasks, currentTask]      
+                }
+            )
+        }     
+            setTaskPaneIsActive(prev => !prev)         
+    }
+
+    
     
     function handleSubmit(e){
         e.preventDefault()
        
-        if(currentTask.id <= tasks.length){
+        if(currentTask.id <= tasks.length){ //checks to see if we are editing an already existing element
             setTasks(prev => {
                 const taskArray = prev.map((item => 
                     item.id === currentTask.id ? currentTask : item
                 ))
                 return taskArray
             })
-        } else{
-            addTask()
+            setTaskPaneIsActive(prev => !prev) 
+        } else { 
+                addTask()        
+             
         }
 
         setCurrentTask({
             name: "",
             id: ""
         })   
-        setTaskPaneIsActive(prev => !prev)    
+        
     }
 
     function handleDeleteTask(taskID){        
