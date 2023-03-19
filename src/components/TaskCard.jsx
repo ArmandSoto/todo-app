@@ -6,14 +6,14 @@ import { EllipsisHorizontalIcon, PencilSquareIcon } from '@heroicons/react/24/ou
 export default function TaskCard(props){
 
     const [ showEllipsis, setShowEllipsis ] = useState(false)
-    const [ isCompleted, setIsCompleted ] = useState(false)
+    const [ isComplete, setIsComplete ] = useState(props.isComplete || false)
 
     function handleShowEllipsis(){
         setShowEllipsis(prevState => !prevState)
     }
 
     function checkboxChangeHandler(){
-        setIsCompleted(prevCompletedState => !prevCompletedState)
+        setIsComplete(prevCompleteState => !prevCompleteState)
         props.completeTask(props.id)
 
     }
@@ -25,16 +25,20 @@ export default function TaskCard(props){
 
                 <input type="checkbox" 
                        className="mr-3"
-                       checked={isCompleted}
+                       checked={isComplete}
                        onChange={checkboxChangeHandler}  />
-                <p className={isCompleted ? "line-through" : ""}>{ props.id + ". " + props.name } </p>
+                <p className={isComplete ? "line-through" : ""}>{ props.id + ". " + props.name } </p>
    
                 {
                     showEllipsis && 
                     <div className="flex ml-auto">
                         <PencilSquareIcon className="h-6 w-6" onClick={() => { props.editTask(props.id) }}/>
                         <EllipsisHorizontalIcon className="h-6 w-6" />
-                        <TrashIcon  className="h-6 w-6 inline-block ml-3 text-red-600" onClick={(e) => { props.deleteTask(props.id) } }/>
+                        <TrashIcon  className="h-6 w-6 inline-block ml-3 text-red-600" onClick={(e) => { 
+                            if (isComplete){
+                                setIsComplete(prev => !prev)
+                            }
+                            props.deleteTask(props.id) } }/>
                     </div>
                 }
             </li>
