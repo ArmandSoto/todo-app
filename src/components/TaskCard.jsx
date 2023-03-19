@@ -5,34 +5,29 @@ import { EllipsisHorizontalIcon, PencilSquareIcon } from '@heroicons/react/24/ou
 
 export default function TaskCard(props){
 
-    const [showEllipsis, setShowEllipsis] = useState(false)
+    const [ showEllipsis, setShowEllipsis ] = useState(false)
     const [ isCompleted, setIsCompleted ] = useState(false)
 
     function handleShowEllipsis(){
         setShowEllipsis(prevState => !prevState)
     }
 
-    function checkHandler(){
-
-        if(isCompleted){
-            console.log("This task has been completed")
-        }
-        else{
-            console.log("This task has not been completed")
-        }
+    function checkboxChangeHandler(){
         setIsCompleted(prevCompletedState => !prevCompletedState)
+        props.completeTask(props.id)
+
     }
     
     
     return (
-        <div className="border-2 shadow-lg rounded-lg my-2 p-4"  >
+        <div className="border-2 shadow-lg rounded-lg my-2 p-4 transition ease-in-out delay-100 hover:-translate-y-1 hover:scale-110"  >
             <li className= "flex" onMouseEnter={handleShowEllipsis} onMouseLeave={handleShowEllipsis}>
 
                 <input type="checkbox" 
                        className="mr-3"
                        checked={isCompleted}
-                       onChange={checkHandler}  />
-                <p className="">{ props.id + ". " + props.name } </p>
+                       onChange={checkboxChangeHandler}  />
+                <p className={isCompleted ? "line-through" : ""}>{ props.id + ". " + props.name } </p>
    
                 {
                     showEllipsis && 

@@ -1,10 +1,9 @@
 
 
 export default function TaskForm(props){
-
     
     return (
-        <form onSubmit={props.handleSubmit} className="flex-col w-full justify-around">
+        <form onSubmit={props.handleSubmit} className="flex-col w-full border-2 rounded-md p-2 justify-around">
                 <div>
                         <input className="border-none" 
                             type="text"

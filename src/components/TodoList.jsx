@@ -8,11 +8,10 @@ export default function TodoList(){
 
     const [ tasks, setTasks ] = useState(JSON.parse(localStorage.getItem('items')) || [])
     const [ taskPaneIsActive, setTaskPaneIsActive ] = useState(false)
-    const [ tasksCompleted, setTaskCompleted ] = useState(0)
     const [ currentTask, setCurrentTask ] = useState({
         name: "",
         id: "",
-        completed: false 
+        isComplete: false
     })
 
 
@@ -24,7 +23,8 @@ export default function TodoList(){
                 deleteTask={handleDeleteTask}
                 editTask={handleEditTask}
                 closePane={closePane}
-                isCompleted={task.isCompleted}
+                isComplete={task.isComplete}
+                completeTask={handleCompleteTask}
             />
             
     })
@@ -34,6 +34,16 @@ export default function TodoList(){
         localStorage.setItem('items', JSON.stringify(tasks))
     }, [tasks])
 
+
+    function handleCompleteTask(completedTaskId){
+
+        setTasks(prevTasks => prevTasks.map(item => 
+            item.id === completedTaskId ? {
+                ...item,
+                isComplete: !item.isComplete
+            } : item
+        ))
+    }
 
     function closePane(){
         if(taskPaneIsActive){
@@ -49,7 +59,7 @@ export default function TodoList(){
                 }
             )
         }     
-            setTaskPaneIsActive(prev => !prev)         
+        setTaskPaneIsActive(prev => !prev)         
     }
 
     
@@ -72,7 +82,8 @@ export default function TodoList(){
 
         setCurrentTask({
             name: "",
-            id: ""
+            id: "",
+            isComplete: false
         })   
         
     }
@@ -95,7 +106,8 @@ export default function TodoList(){
        
         setCurrentTask({
             name: tasks[taskId-1].name,
-            id: tasks[taskId-1].id
+            id: tasks[taskId-1].id,
+            isComplete: false
         })
         setTaskPaneIsActive(prev => !prev)
 
@@ -123,22 +135,25 @@ export default function TodoList(){
     function handleClick(){
         setTaskPaneIsActive(prev => !prev)
     }
+
     
 
     return (
-        <div className={"flex-column border-2 w-1/3"}>
+        <div className={"flex-column w-1/3"}>
      
             <div className={"flex-column"}>
                 <ul className="flex-column space-between">
                         {taskComponents}
                 </ul>
             </div>
-            <div className={"flex border-2"}>
+            <div className={"flex"}>
 
                 {
                     !taskPaneIsActive ? 
-                        <><PlusCircleIcon onClick={handleClick} className="h-8 w-8 text-emerald-400" />
-                        <p className={tasks.length > 0 ? "hidden" : "ml-5"}>You have no tasks currently</p></>
+                        <>
+                            <PlusCircleIcon onClick={handleClick} className="h-10 w-10 text-emerald-400" />
+                            <p className={tasks.length > 0 ? "hidden" : "leading-10 ml-5"}>You have no tasks currently</p>
+                        </>
                     :
                     <>
                         <TaskForm
