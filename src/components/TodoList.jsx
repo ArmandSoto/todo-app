@@ -1,7 +1,11 @@
 import { useState, useEffect } from 'react'
+import { nanoid } from 'nanoid'
+import { DragDropContext } from 'react-beautiful-dnd'
+import { StrictModeDroppable as Droppable} from '../helpers/StrictModeDroppable'
 import { PlusCircleIcon } from '@heroicons/react/24/solid'
 import TaskCard from './TaskCard'
 import TaskForm from './TaskForm'
+
 
 
 export default function TodoList(){
@@ -14,10 +18,10 @@ export default function TodoList(){
         isComplete: false
     })
 
-
+    
     const taskComponents = tasks.map((task, index) => {
         return <TaskCard
-                key={index}
+                key={nanoid()}
                 name={task.name}
                 id={task.id}
                 deleteTask={handleDeleteTask}
@@ -33,6 +37,23 @@ export default function TodoList(){
     useEffect(() => {   
         localStorage.setItem('items', JSON.stringify(tasks))
     }, [tasks])
+
+    function drop(result) {      
+        if (!result){
+            return
+        }
+        let taskItemsCopy = [...tasks]
+        const [reorderedItem] = taskItemsCopy.splice(result.source.index, 1)
+        taskItemsCopy.splice(result.destination.index, 0, reorderedItem)
+        taskItemsCopy = taskItemsCopy.map((item, index) => {
+            return {
+                ...item,
+                id: index + 1
+            }
+            
+        })
+        setTasks(taskItemsCopy)
+    }
 
 
     function handleCompleteTask(completedTaskId){
@@ -140,11 +161,19 @@ export default function TodoList(){
 
     return (
         <div className={"flex-column w-1/3"}>
-     
             <div className={"flex-column"}>
-                <ul className="flex-column space-between">
-                        {taskComponents}
-                </ul>
+                <DragDropContext onDragEnd={drop}>
+                    <Droppable droppableId="todos">
+                        {(provided)=>(
+                        <ul className="flex-column space-between"
+                            {...provided.droppableProps} ref={provided.innerRef}
+                        >
+                                {taskComponents}
+                                {provided.placeholder}
+                        </ul>
+                    )}
+                    </Droppable>
+                </DragDropContext>
             </div>
             <div className={"flex"}>
 
@@ -155,13 +184,13 @@ export default function TodoList(){
                             <p className={tasks.length > 0 ? "hidden" : "leading-10 ml-5"}>You have no tasks currently</p>
                         </>
                     :
-                    <>
-                        <TaskForm
-                            handleSubmit={handleSubmit}
-                            handleChange={handleChange}
-                            currentTask={currentTask}   
-                        />
-                    </>
+                        <>
+                            <TaskForm
+                                handleSubmit={handleSubmit}
+                                handleChange={handleChange}
+                                currentTask={currentTask}   
+                            />
+                        </>
                 }
                 
             </div>

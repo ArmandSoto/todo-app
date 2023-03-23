@@ -1,33 +1,44 @@
 
 import { useState } from 'react'
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
 import { TrashIcon } from '@heroicons/react/24/solid'
 import { EllipsisHorizontalIcon, PencilSquareIcon } from '@heroicons/react/24/outline'
+
+//we have to use React beautiful dnd to make good drag and drop features
+
 
 export default function TaskCard(props){
 
     const [ showEllipsis, setShowEllipsis ] = useState(false)
-    const [ isComplete, setIsComplete ] = useState(props.isComplete || false)
+    const [ isComplete, setIsComplete ] = useState(props.isComplete)
+    
 
     function handleShowEllipsis(){
         setShowEllipsis(prevState => !prevState)
     }
 
     function checkboxChangeHandler(){
+        
         setIsComplete(prevCompleteState => !prevCompleteState)
+        
         props.completeTask(props.id)
 
     }
     
     
     return (
-        <div className="border-2 shadow-lg rounded-lg my-2 p-4 transition ease-in-out delay-100 hover:-translate-y-1 hover:scale-110"  >
+        <Draggable key={props.key} draggableId={props.id.toString()} index={props.id - 1}>
+        {(provided) =>(
+        <div className="border-2 shadow-lg rounded-lg my-2 p-4 transition ease-in-out delay-100 hover:-translate-y-1 hover:scale-110"
+        {...provided.draggableProps} {...provided.dragHandleProps} ref={provided.innerRef}
+        > 
             <li className= "flex" onMouseEnter={handleShowEllipsis} onMouseLeave={handleShowEllipsis}>
 
                 <input type="checkbox" 
                        className="mr-3"
                        checked={isComplete}
                        onChange={checkboxChangeHandler}  />
-                <p className={isComplete ? "line-through" : ""}>{ props.id + ". " + props.name } </p>
+                <p className={isComplete ? "line-through" : ""}>{ props.name } </p>
    
                 {
                     showEllipsis && 
@@ -41,8 +52,9 @@ export default function TaskCard(props){
                             props.deleteTask(props.id) } }/>
                     </div>
                 }
-            </li>
-            
+            </li>   
         </div>
+        )}
+        </Draggable>
     )
 }
