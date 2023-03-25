@@ -8,7 +8,8 @@ import TaskForm from './TaskForm'
 
 
 
-export default function TodoList(){
+
+export default function TodoList(props){
 
     const [ tasks, setTasks ] = useState(JSON.parse(localStorage.getItem('items')) || [])
     const [ taskPaneIsActive, setTaskPaneIsActive ] = useState(false)
@@ -58,12 +59,32 @@ export default function TodoList(){
 
     function handleCompleteTask(completedTaskId){
 
-        setTasks(prevTasks => prevTasks.map(item => 
-            item.id === completedTaskId ? {
-                ...item,
-                isComplete: !item.isComplete
-            } : item
-        ))
+        let completedTask;
+
+        // setTasks(prevTasks => prevTasks.map(item => 
+        //     item.id === completedTaskId ? {
+        //         ...item,
+        //         isComplete: !item.isComplete
+        //     } : item
+        // ))
+
+        setTasks(prevTasks => prevTasks.map(item => {
+            if(item.id === completedTaskId){
+                completedTask = {
+                    ...item,
+                    isComplete: !item.isComplete
+                }
+                return completedTask
+            }
+            return item
+        }))
+        
+        props.addToCompleted(completedTask)
+
+        handleDeleteTask(completedTaskId)
+
+        
+        
     }
 
     function closePane(){
@@ -81,9 +102,7 @@ export default function TodoList(){
             )
         }     
         setTaskPaneIsActive(prev => !prev)         
-    }
-
-    
+    }  
     
     function handleSubmit(e){
         e.preventDefault()
@@ -109,6 +128,7 @@ export default function TodoList(){
         
     }
 
+    //make note that handle delete task should possibly be renamed to remove task instead
     function handleDeleteTask(taskID){        
         setTasks(prevTasks => {
             let taskArray = prevTasks.filter(item => item.id != taskID)
@@ -175,7 +195,7 @@ export default function TodoList(){
                     </Droppable>
                 </DragDropContext>
             </div>
-            <div className={"flex"}>
+            <div className="flex">
 
                 {
                     !taskPaneIsActive ? 
@@ -185,11 +205,7 @@ export default function TodoList(){
                         </>
                     :
                         <>
-                            <TaskForm
-                                handleSubmit={handleSubmit}
-                                handleChange={handleChange}
-                                currentTask={currentTask}   
-                            />
+                            <TaskForm handleSubmit={handleSubmit} handleChange={handleChange} currentTask={currentTask} />
                         </>
                 }
                 

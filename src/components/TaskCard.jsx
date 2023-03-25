@@ -1,17 +1,15 @@
 
 import { useState } from 'react'
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
+import { Draggable } from 'react-beautiful-dnd'
 import { TrashIcon } from '@heroicons/react/24/solid'
 import { EllipsisHorizontalIcon, PencilSquareIcon } from '@heroicons/react/24/outline'
 
-//we have to use React beautiful dnd to make good drag and drop features
 
 
 export default function TaskCard(props){
 
     const [ showEllipsis, setShowEllipsis ] = useState(false)
     const [ isComplete, setIsComplete ] = useState(props.isComplete)
-    
 
     function handleShowEllipsis(){
         setShowEllipsis(prevState => !prevState)
@@ -27,7 +25,7 @@ export default function TaskCard(props){
     
     
     return (
-        <Draggable key={props.key} draggableId={props.id.toString()} index={props.id - 1}>
+        <Draggable key={props.id} draggableId={props.id.toString()} index={props.id - 1}>
         {(provided) =>(
         <div className="border-2 shadow-lg rounded-lg my-2 p-4 transition ease-in-out delay-100 hover:-translate-y-1 hover:scale-110"
         {...provided.draggableProps} {...provided.dragHandleProps} ref={provided.innerRef}

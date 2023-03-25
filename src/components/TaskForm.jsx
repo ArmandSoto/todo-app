@@ -14,8 +14,8 @@ export default function TaskForm(props){
                         />
                 </div>
                 <div className="flex justify-end">
-                    <button className=" border-2 rounded-lg p-2 text-white bg-purple-400" >Cancel</button>
-                    <button className="border-2 rounded-lg p-2 text-white bg-red-500" type="submit" >Add Task </button>
+                    <button className=" border-2 rounded-lg p-2 text-white bg-purple-400"> Cancel</button>
+                    <button className="border-2 rounded-lg p-2 text-white bg-red-500" type="submit"> Add Task </button>
                 </div>
         </form>
 
