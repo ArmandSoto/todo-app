@@ -1,0 +1,7 @@
+When trying to implement completedTasks as a state and change the CompletedTasks page to Important
+we ran across the following issues:
+
+1. Everything is based off of id and order which is determined inside of setter functions based off of index
+like in handleDeleteTask and drop. If this is not fixed, this could lead to potential conflicts in Id when switching between completed tasks and and the items list in our program.
+
+Update-- found a work around and am currently making sure to correctly insert elements when moving between completed and items in local storage

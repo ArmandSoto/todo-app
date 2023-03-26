@@ -12,11 +12,7 @@ function App() {
   
   const [ sidebarIsOpen, setSidebarIsOpen ] = useState(false)
   const [ showTodoList, setShowTodoList ] = useState(true)
-  const [ completedTasks, setCompletedTasks ] = useState(JSON.parse(localStorage.getItem('completed')) || [])
 
-  useEffect(() => {
-    localStorage.setItem('completed', JSON.stringify(completedTasks))
-  }, [completedTasks])
   
   function toggleSidebar(){
     setSidebarIsOpen(prevState => !prevState)
@@ -28,10 +24,6 @@ function App() {
     }
   }
 
-  function handleAddToCompleted(task){
-    setCompletedTasks(prevList => [...prevList, task])
-    console.log(completedTasks)
-  }
 
   
 
@@ -46,7 +38,7 @@ function App() {
       }
       <section className="flex flex-grow justify-center mt-4">
         {
-          showTodoList ? <TodoList addToCompleted={handleAddToCompleted} /> : <CompletedTasks />
+          showTodoList ? <TodoList /> : <CompletedTasks />
           
         }
       </section>

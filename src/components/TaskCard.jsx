@@ -16,10 +16,16 @@ export default function TaskCard(props){
     }
 
     function checkboxChangeHandler(){
+
+        let markedAsComplete = !isComplete
         
-        setIsComplete(prevCompleteState => !prevCompleteState)
+        setIsComplete(markedAsComplete)
         
-        props.completeTask(props.id)
+        if (markedAsComplete){
+            props.moveToCompleted(props.id)
+        }else{
+            props.moveToTasks(props.id)
+        }
 
     }
     

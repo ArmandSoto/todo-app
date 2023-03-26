@@ -12,6 +12,7 @@ import TaskForm from './TaskForm'
 export default function TodoList(props){
 
     const [ tasks, setTasks ] = useState(JSON.parse(localStorage.getItem('items')) || [])
+    const [ completedTasks, setCompletedTasks ] = useState(JSON.parse(localStorage.getItem('completed')) || [])
     const [ taskPaneIsActive, setTaskPaneIsActive ] = useState(false)
     const [ currentTask, setCurrentTask ] = useState({
         name: "",
@@ -19,54 +20,82 @@ export default function TodoList(props){
         isComplete: false
     })
 
+
+    useEffect(() => {
+      localStorage.setItem('completed', JSON.stringify(completedTasks))
+    }, [completedTasks])
+    
+    useEffect(() => {   
+        localStorage.setItem('items', JSON.stringify(tasks))
+    }, [tasks])
     
     const taskComponents = tasks.map((task, index) => {
         return <TaskCard
                 key={nanoid()}
                 name={task.name}
                 id={task.id}
-                deleteTask={handleDeleteTask}
+                deleteTask={removeFromTasks}
                 editTask={handleEditTask}
                 closePane={closePane}
                 isComplete={task.isComplete}
-                completeTask={handleCompleteTask}
+                moveToCompleted={moveToCompleted}
+                moveToTasks={moveToTasks}
             />
             
     })
 
 
-    useEffect(() => {   
-        localStorage.setItem('items', JSON.stringify(tasks))
-    }, [tasks])
-
-    function drop(result) {      
-        if (!result){
-            return
-        }
-        let taskItemsCopy = [...tasks]
-        const [reorderedItem] = taskItemsCopy.splice(result.source.index, 1)
-        taskItemsCopy.splice(result.destination.index, 0, reorderedItem)
-        taskItemsCopy = taskItemsCopy.map((item, index) => {
+    function removeItem(arr, id){
+        let taskArray = arr.filter(item => item.id != id)
+        let taskArrayMap = taskArray.map((task, index)=>{
             return {
-                ...item,
+                ...task,
                 id: index + 1
             }
-            
         })
-        setTasks(taskItemsCopy)
+
+        return taskArrayMap
+    }
+
+    function removeFromTasks(taskId){             
+        setTasks(prevTasks => removeItem(prevTasks, taskId))
+    }
+
+    function removeFromCompleted(taskId){
+        setCompletedTasks(prevTasks => removeItem(prevTasks, taskId))
+    }
+
+    function addToList(arr, itemToAdd){
+        let newId = arr.length + 1
+        let newList = [...arr, {...itemToAdd, id: newId}]
+        return newList 
     }
 
 
-    function handleCompleteTask(completedTaskId){
+    function moveToTasks(incompleteTaskId){
+        let itemToRestore;
 
+        setCompletedTasks(prevCompleted => prevCompleted.map(item =>{
+            if (item.id === incompleteTaskId){
+                itemToRestore = {
+                    ...item,
+                    isComplete: !item.isComplete
+                }
+                return itemToRestore
+            }
+            return item
+        }))
+
+        setTasks(prevList => addToList(prevList, itemToRestore))
+
+        removeFromCompleted(incompleteTaskId)
+    }
+
+    /* these functions can be combined and refactored  */
+
+    function moveToCompleted(completedTaskId){
+        
         let completedTask;
-
-        // setTasks(prevTasks => prevTasks.map(item => 
-        //     item.id === completedTaskId ? {
-        //         ...item,
-        //         isComplete: !item.isComplete
-        //     } : item
-        // ))
 
         setTasks(prevTasks => prevTasks.map(item => {
             if(item.id === completedTaskId){
@@ -79,13 +108,14 @@ export default function TodoList(props){
             return item
         }))
         
-        props.addToCompleted(completedTask)
-
-        handleDeleteTask(completedTaskId)
-
         
+        setCompletedTasks(prevList => addToList(prevList, completedTask))
+
+        removeFromTasks(completedTaskId)       
         
     }
+
+
 
     function closePane(){
         if(taskPaneIsActive){
@@ -93,6 +123,7 @@ export default function TodoList(props){
         }
     }
 
+    //consider calling this createNewTask
     function addTask(){
         if(currentTask.name.trim().length > 0){
             setTasks(
@@ -128,20 +159,7 @@ export default function TodoList(props){
         
     }
 
-    //make note that handle delete task should possibly be renamed to remove task instead
-    function handleDeleteTask(taskID){        
-        setTasks(prevTasks => {
-            let taskArray = prevTasks.filter(item => item.id != taskID)
-            let taskArrayMap = taskArray.map((task, index) =>{
-                return {
-                    ...task,
-                    id: index + 1,
-                }
-            })
-                  
-            return taskArrayMap
-        })          
-    }
+
 
     function handleEditTask(taskId){
        
@@ -177,6 +195,25 @@ export default function TodoList(props){
         setTaskPaneIsActive(prev => !prev)
     }
 
+
+    function drop(result) {      
+        if (!result){
+            return
+        }
+        let taskItemsCopy = [...tasks]
+        const [reorderedItem] = taskItemsCopy.splice(result.source.index, 1)
+        taskItemsCopy.splice(result.destination.index, 0, reorderedItem)
+        taskItemsCopy = taskItemsCopy.map((item, index) => {
+            return {
+                ...item,
+                id: index + 1
+            }
+            
+        })
+        setTasks(taskItemsCopy)
+    }
+
+
     
 
     return (
@@ -195,6 +232,8 @@ export default function TodoList(props){
                     </Droppable>
                 </DragDropContext>
             </div>
+
+            
             <div className="flex">
 
                 {
