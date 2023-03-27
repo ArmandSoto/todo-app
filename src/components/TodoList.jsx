@@ -35,6 +35,7 @@ export default function TodoList(props) {
         id={task.id}
         name={task.name}
         deleteTask={removeFromTasks}
+        clearTask={removeFromCompletedTasks}
         editTask={handleEditTask}
         closePane={closePane}
         isComplete={task.isComplete}
@@ -52,6 +53,7 @@ export default function TodoList(props) {
         id={task.id + "2"} //remember to check what happens if we remove the 2
         name={task.name}
         deleteTask={removeFromTasks}
+        clearTask={removeFromCompletedTasks}
         editTask={handleEditTask}
         closePane={closePane}
         isComplete={task.isComplete}
@@ -62,10 +64,24 @@ export default function TodoList(props) {
     );
   });
 
-  function removeFromTasks(tasksId) {
+  function removeFromCompletedTasks(taskId){
+    setCompletedTasks((prevTasks) => {
+
+      const copyOfPrevTasks = [...prevTasks];
+      const index = copyOfPrevTasks.findIndex((task) => task.id === taskId);
+      copyOfPrevTasks.splice(index, 1);
+      return [...copyOfPrevTasks]
+  
+    })
+
+  }
+  
+
+
+  function removeFromTasks(taskId) {
     setTasks((prevTasks) => {
       //make sure not to modify prevTasks directly so fix this
-      const index = prevTasks.findIndex((task) => task.id === tasksId);
+      const index = prevTasks.findIndex((task) => task.id === taskId);
       prevTasks.splice(index, 1);
       return [...prevTasks];
     });

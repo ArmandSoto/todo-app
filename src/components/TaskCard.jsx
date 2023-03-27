@@ -70,10 +70,13 @@ export default function TaskCard(props){
                   <TrashIcon
                     className="h-6 w-6 inline-block ml-3 text-red-600"
                     onClick={(e) => {
-                      // if (isComplete){
-                      //     setIsComplete(prev => !prev)
-                      // }
-                      props.deleteTask(props.id);
+                      if (isComplete){
+                          props.clearTask(props.id)
+                      }else{
+                          props.deleteTask(props.id);
+
+                      }
+                      
                     }}
                   />
                 </div>
