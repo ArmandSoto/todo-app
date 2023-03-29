@@ -24,16 +24,15 @@ function App() {
   }
 
 
-
   return (
     <main className="text-base font-extralight tracking-wide overflow-hidden h-screen">
       <Header toggleSidebar={toggleSidebar} />
 
       <div className="flex h-full">
-        {sidebarIsOpen && (
-            <Sidebar changePage={handlePageChange} />
+       
+            <Sidebar isOpen={sidebarIsOpen} changePage={handlePageChange} />
           
-        )}
+
         <section className="flex flex-grow justify-center p-8 border-2">
           {/* {showTodoList ? <TodoList /> : <ImportantTasks />} */}
           {
