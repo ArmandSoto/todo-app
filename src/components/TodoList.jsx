@@ -7,11 +7,14 @@ import TaskCard from "./TaskCard";
 import TaskForm from "./TaskForm";
 
 export default function TodoList(props) {
+  
+
+
   const [tasks, setTasks] = useState(
-    JSON.parse(localStorage.getItem("items")) || []
+    JSON.parse(localStorage.getItem(props.page)) || []
   );
   const [completedTasks, setCompletedTasks] = useState(
-    JSON.parse(localStorage.getItem("completed")) || []
+    JSON.parse(localStorage.getItem(`${props.page} completed`)) || []
   );
   const [taskPaneIsActive, setTaskPaneIsActive] = useState(false);
   const [currentTask, setCurrentTask] = useState({
@@ -21,11 +24,11 @@ export default function TodoList(props) {
   });
 
   useEffect(() => {
-    localStorage.setItem("completed", JSON.stringify(completedTasks));
+    localStorage.setItem(`${props.page} completed`, JSON.stringify(completedTasks));
   }, [completedTasks]);
 
   useEffect(() => {
-    localStorage.setItem("items", JSON.stringify(tasks));
+    localStorage.setItem(props.page, JSON.stringify(tasks));
   }, [tasks]);
 
   const taskComponents = tasks.map((task, index) => {
@@ -222,7 +225,7 @@ export default function TodoList(props) {
         </DragDropContext>
       </div>
 
-      <h2>Completed</h2>
+      { completedTasks.length > 0  && <h2>Completed</h2>}
       <div className={"flex-column"}>
         <DragDropContext onDragEnd={dropForCompleted}>
           <Droppable droppableId="completedTodos">
@@ -240,7 +243,7 @@ export default function TodoList(props) {
         </DragDropContext>
       </div>
 
-      <div className="flex">
+      <div className="flex justify-center">
         {!taskPaneIsActive ? (
           <>
             <PlusCircleIcon
