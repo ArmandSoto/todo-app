@@ -7,9 +7,6 @@ import TaskCard from "./TaskCard";
 import TaskForm from "./TaskForm";
 
 export default function TodoList(props) {
-  
-
-
   const [tasks, setTasks] = useState(
     JSON.parse(localStorage.getItem(props.page)) || []
   );
@@ -24,7 +21,10 @@ export default function TodoList(props) {
   });
 
   useEffect(() => {
-    localStorage.setItem(`${props.page} completed`, JSON.stringify(completedTasks));
+    localStorage.setItem(
+      `${props.page} completed`,
+      JSON.stringify(completedTasks)
+    );
   }, [completedTasks]);
 
   useEffect(() => {
@@ -52,7 +52,7 @@ export default function TodoList(props) {
   const completedComponents = completedTasks.map((task, index) => {
     return (
       <TaskCard
-        key={task.id + task.name }
+        key={task.id + task.name}
         id={task.id + "2"} //remember to check what happens if we remove the 2
         name={task.name}
         deleteTask={removeFromTasks}
@@ -67,19 +67,14 @@ export default function TodoList(props) {
     );
   });
 
-  function removeFromCompletedTasks(taskId){
+  function removeFromCompletedTasks(taskId) {
     setCompletedTasks((prevTasks) => {
-
       const copyOfPrevTasks = [...prevTasks];
       const index = copyOfPrevTasks.findIndex((task) => task.id === taskId);
       copyOfPrevTasks.splice(index, 1);
-      return [...copyOfPrevTasks]
-  
-    })
-
+      return [...copyOfPrevTasks];
+    });
   }
-  
-
 
   function removeFromTasks(taskId) {
     setTasks((prevTasks) => {
@@ -186,7 +181,6 @@ export default function TodoList(props) {
   }
 
   function drop(result) {
-    
     if (!result || result.destination === null) {
       return;
     }
@@ -196,8 +190,8 @@ export default function TodoList(props) {
     setTasks(taskItemsCopy);
   }
 
-  function dropForCompleted(result){
-    if(!result || result.destination === null){
+  function dropForCompleted(result) {
+    if (!result || result.destination === null) {
       return;
     }
     let completedItemsCopy = [...completedTasks];
@@ -225,7 +219,7 @@ export default function TodoList(props) {
         </DragDropContext>
       </div>
 
-      { completedTasks.length > 0  && <h2>Completed</h2>}
+      {completedTasks.length > 0 && <h2>Completed</h2>}
       <div className={"flex-column"}>
         <DragDropContext onDragEnd={dropForCompleted}>
           <Droppable droppableId="completedTodos">
