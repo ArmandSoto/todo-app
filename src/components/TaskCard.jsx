@@ -1,27 +1,31 @@
 import { useState } from "react";
-import { Draggable } from "react-beautiful-dnd";
-import { TrashIcon } from "@heroicons/react/24/solid";
+import { Draggable, useTouchSensor } from "react-beautiful-dnd";
 import {
   EllipsisHorizontalIcon,
   PencilSquareIcon,
+  StarIcon,
+  TrashIcon,
 } from "@heroicons/react/24/outline";
 
 export default function TaskCard(props) {
   const [showEllipsis, setShowEllipsis] = useState(false);
   const [isComplete, setIsComplete] = useState(props.isComplete);
+  const [isImportant, setIsImportant] = useState(props.isImportant)
 
   function checkboxChangeHandler() {
     let markedAsComplete = !isComplete;
 
     setIsComplete(markedAsComplete);
 
-    if (markedAsComplete) {
-      props.completeTask(props.id);
-      
-    } else {
-      props.restoreTask(props.id);
-      
-    }
+
+    props.updateTask(props.id, markedAsComplete)
+  }
+
+  function markAsImportantHandler(){
+
+    setIsImportant(prev => !prev)
+
+    props.markAsImportant(props.id, isComplete)
   }
 
   //remember to take a look at this index part because props.id will no longer be a number
@@ -60,14 +64,13 @@ export default function TaskCard(props) {
                   }}
                 />
                 <EllipsisHorizontalIcon className="h-6 w-6" />
+                <StarIcon className={`${isImportant ? "text-yellow-500" : ""} h-6 w-6`} onClick={() => {
+                  markAsImportantHandler(props.id)
+                }} />
                 <TrashIcon
                   className="h-6 w-6 inline-block ml-3 text-red-600"
                   onClick={(e) => {
-                    if (isComplete) {
-                      props.clearTask(props.id);
-                    } else {
-                      props.deleteTask(props.id);
-                    }
+                    props.removeFromTasks(props.id, isComplete)
                   }}
                 />
               </div>

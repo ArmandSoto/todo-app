@@ -18,7 +18,12 @@ export default function TodoList(props) {
     name: "",
     id: "",
     isComplete: false,
+    isImportant: false,
   });
+
+  const [numberOfImportant, setNumberOfImportant] = useState(
+    JSON.parse(localStorage.getItem("numberOfImportant")) || 0
+  );
 
   useEffect(() => {
     localStorage.setItem(
@@ -31,20 +36,26 @@ export default function TodoList(props) {
     localStorage.setItem(props.page, JSON.stringify(tasks));
   }, [tasks]);
 
+  useEffect(() => {
+    localStorage.setItem(
+      "numberOfImportant",
+      JSON.stringify(numberOfImportant)
+    );
+  }, [numberOfImportant]);
+
   const taskComponents = tasks.map((task, index) => {
     return (
       <TaskCard
         key={task.id + task.name}
         id={task.id}
         name={task.name}
-        deleteTask={removeFromTasks}
-        clearTask={removeFromCompletedTasks}
+        removeFromTasks={removeFromTasks}
         editTask={handleEditTask}
         closePane={closePane}
         isComplete={task.isComplete}
         index={index}
-        completeTask={completeTask}
-        restoreTask={restoreTask}
+        updateTask={updateTask}
+        markAsImportant={markImportantTask}
       />
     );
   });
@@ -55,64 +66,45 @@ export default function TodoList(props) {
         key={task.id + task.name}
         id={task.id + "2"} //remember to check what happens if we remove the 2
         name={task.name}
-        deleteTask={removeFromTasks}
-        clearTask={removeFromCompletedTasks}
+        removeFromTasks={removeFromTasks}
         editTask={handleEditTask}
         closePane={closePane}
         isComplete={task.isComplete}
+        isImportant={task.isImportant}
         index={index}
-        completeTask={completeTask}
-        restoreTask={restoreTask}
+        updateTask={updateTask}
+        markAsImportant={markImportantTask}
       />
     );
   });
 
-  function removeFromCompletedTasks(taskId) {
-    setCompletedTasks((prevTasks) => {
+
+  function removeFromTasks(taskId, isCompleted = false){
+    const setTasksFunction = isCompleted ? setCompletedTasks : setTasks;
+    setTasksFunction((prevTasks) => {
       const copyOfPrevTasks = [...prevTasks];
       const index = copyOfPrevTasks.findIndex((task) => task.id === taskId);
-      copyOfPrevTasks.splice(index, 1);
-      return [...copyOfPrevTasks];
-    });
+      copyOfPrevTasks.splice(index, 1)
+      return [...copyOfPrevTasks]
+    })
   }
 
-  function removeFromTasks(taskId) {
-    setTasks((prevTasks) => {
-      //make sure not to modify prevTasks directly so fix this
-      const index = prevTasks.findIndex((task) => task.id === taskId);
-      prevTasks.splice(index, 1);
-      return [...prevTasks];
-    });
-  }
 
-  function restoreTask(taskId) {
+  function updateTask(taskId, isComplete=false){
     let itemToRestore;
-    //look in completedTasks for a matching id
-    setCompletedTasks((prevTasks) => {
+    let setTaskFunction = isComplete ? setTasks: setCompletedTasks;
+    setTaskFunction((prevTasks) =>{
       const copyOfTasks = [...prevTasks];
-      const itemIndex = copyOfTasks.findIndex((task) => task.id === taskId);
+      const itemIndex = copyOfTasks.findIndex((task)=> task.id === taskId);
       itemToRestore = copyOfTasks.splice(itemIndex, 1)[0];
-      itemToRestore = { ...itemToRestore, isComplete: false };
-      return [...copyOfTasks];
-    });
-    setTasks((prevList) => [...prevList, itemToRestore]);
-  }
-
-  /* these functions can be combined and refactored  */
-
-  function completeTask(taskId) {
-    let completedTask;
-    setTasks((prevTasks) => {
-      const copyOfTasks = [...prevTasks];
-      const completedIndex = copyOfTasks.findIndex(
-        (task) => task.id === taskId
-      );
-      completedTask = copyOfTasks.splice(completedIndex, 1)[0];
-      completedTask = { ...completedTask, isComplete: true };
+      itemToRestore = {...itemToRestore, isComplete: isComplete};
       return [...copyOfTasks];
     });
 
-    setCompletedTasks((prevList) => [...prevList, completedTask]);
+    setTaskFunction = isComplete ? setCompletedTasks : setTasks;
+    setTaskFunction((prevList) => [...prevList, itemToRestore]);
+
+
   }
 
   function closePane() {
@@ -152,6 +144,7 @@ export default function TodoList(props) {
       name: "",
       id: "",
       isComplete: false,
+      isImportant: false,
     });
   }
 
@@ -162,9 +155,22 @@ export default function TodoList(props) {
         name: tasks[index].name,
         id: tasks[index].id,
         isComplete: false,
+        isImportant: false,
       });
       setTaskPaneIsActive((prev) => !prev);
     }
+  }
+
+  
+  function markImportantTask(taskId, isCompleted = false){
+    let copyOfTasks = isCompleted ? [...completedTasks] : [...tasks];
+    const index = copyOfTasks.findIndex((item) => item.id === taskId);
+    let importantTask = copyOfTasks.splice(index, 1)[0];
+    copyOfTasks.splice(index, 0, {
+      ...importantTask,
+      isImportant: !importantTask.isImportant,
+    });
+    isCompleted ? setCompletedTasks(copyOfTasks) : setTasks(copyOfTasks)
   }
 
   function handleChange(e) {
@@ -180,30 +186,23 @@ export default function TodoList(props) {
     setTaskPaneIsActive((prev) => !prev);
   }
 
-  function drop(result) {
+
+  function drop(result, dropArea) {
+    console.log(result)
     if (!result || result.destination === null) {
       return;
     }
-    let taskItemsCopy = [...tasks];
+    let taskItemsCopy = dropArea === 'todos' ? [...tasks] : [...completedTasks];
+    let tasksSetter = dropArea === 'todos' ? setTasks : setCompletedTasks;
     const [reorderedItem] = taskItemsCopy.splice(result.source.index, 1);
     taskItemsCopy.splice(result.destination.index, 0, reorderedItem);
-    setTasks(taskItemsCopy);
-  }
-
-  function dropForCompleted(result) {
-    if (!result || result.destination === null) {
-      return;
-    }
-    let completedItemsCopy = [...completedTasks];
-    const [reorderedItem] = completedItemsCopy.splice(result.source.index, 1);
-    completedItemsCopy.splice(result.destination.index, 0, reorderedItem);
-    setCompletedTasks(completedItemsCopy);
+    tasksSetter(taskItemsCopy);
   }
 
   return (
     <div className={"flex-column w-1/3"}>
       <div className={"flex-column"}>
-        <DragDropContext onDragEnd={drop}>
+        <DragDropContext onDragEnd={(result)=> {drop(result,'todos')}}>
           <Droppable droppableId="todos">
             {(provided) => (
               <ul
@@ -221,7 +220,7 @@ export default function TodoList(props) {
 
       {completedTasks.length > 0 && <h2>Completed</h2>}
       <div className={"flex-column"}>
-        <DragDropContext onDragEnd={dropForCompleted}>
+        <DragDropContext onDragEnd={(result) => {drop(result, 'completed')}}>
           <Droppable droppableId="completedTodos">
             {(provided) => (
               <ul
