@@ -6,13 +6,15 @@ import { PlusCircleIcon } from "@heroicons/react/24/solid";
 import TaskCard from "./TaskCard";
 import TaskForm from "./TaskForm";
 
-export default function TodoList(props) {
-  const [tasks, setTasks] = useState(
-    JSON.parse(localStorage.getItem(props.page)) || []
-  );
-  const [completedTasks, setCompletedTasks] = useState(
-    JSON.parse(localStorage.getItem(`${props.page} completed`)) || []
-  );
+export default function TodoList({
+  page,
+  tasks,
+  setTasks,
+  completedTasks,
+  setCompletedTasks,
+  numberOfImportant,
+  setNumberOfImportant,
+}) {
   const [taskPaneIsActive, setTaskPaneIsActive] = useState(false);
   const [currentTask, setCurrentTask] = useState({
     name: "",
@@ -20,28 +22,6 @@ export default function TodoList(props) {
     isComplete: false,
     isImportant: false,
   });
-
-  const [numberOfImportant, setNumberOfImportant] = useState(
-    JSON.parse(localStorage.getItem("numberOfImportant")) || 0
-  );
-
-  useEffect(() => {
-    localStorage.setItem(
-      `${props.page} completed`,
-      JSON.stringify(completedTasks)
-    );
-  }, [completedTasks]);
-
-  useEffect(() => {
-    localStorage.setItem(props.page, JSON.stringify(tasks));
-  }, [tasks]);
-
-  useEffect(() => {
-    localStorage.setItem(
-      "numberOfImportant",
-      JSON.stringify(numberOfImportant)
-    );
-  }, [numberOfImportant]);
 
   const taskComponents = tasks.map((task, index) => {
     return (
@@ -53,9 +33,10 @@ export default function TodoList(props) {
         editTask={handleEditTask}
         closePane={closePane}
         isComplete={task.isComplete}
+        isImportant={task.isImportant}
         index={index}
         updateTask={updateTask}
-        markAsImportant={markImportantTask}
+        markImportantTask={markImportantTask}
       />
     );
   });
@@ -73,38 +54,34 @@ export default function TodoList(props) {
         isImportant={task.isImportant}
         index={index}
         updateTask={updateTask}
-        markAsImportant={markImportantTask}
+        markImportantTask={markImportantTask}
       />
     );
   });
 
-
-  function removeFromTasks(taskId, isCompleted = false){
+  function removeFromTasks(taskId, isCompleted = false) {
     const setTasksFunction = isCompleted ? setCompletedTasks : setTasks;
     setTasksFunction((prevTasks) => {
       const copyOfPrevTasks = [...prevTasks];
       const index = copyOfPrevTasks.findIndex((task) => task.id === taskId);
-      copyOfPrevTasks.splice(index, 1)
-      return [...copyOfPrevTasks]
-    })
+      copyOfPrevTasks.splice(index, 1);
+      return [...copyOfPrevTasks];
+    });
   }
 
-
-  function updateTask(taskId, isComplete=false){
+  function updateTask(taskId, isComplete = false) {
     let itemToRestore;
-    let setTaskFunction = isComplete ? setTasks: setCompletedTasks;
-    setTaskFunction((prevTasks) =>{
+    let setTaskFunction = isComplete ? setTasks : setCompletedTasks;
+    setTaskFunction((prevTasks) => {
       const copyOfTasks = [...prevTasks];
-      const itemIndex = copyOfTasks.findIndex((task)=> task.id === taskId);
+      const itemIndex = copyOfTasks.findIndex((task) => task.id === taskId);
       itemToRestore = copyOfTasks.splice(itemIndex, 1)[0];
-      itemToRestore = {...itemToRestore, isComplete: isComplete};
+      itemToRestore = { ...itemToRestore, isComplete: isComplete };
       return [...copyOfTasks];
     });
 
     setTaskFunction = isComplete ? setCompletedTasks : setTasks;
     setTaskFunction((prevList) => [...prevList, itemToRestore]);
-
-
   }
 
   function closePane() {
@@ -161,16 +138,20 @@ export default function TodoList(props) {
     }
   }
 
-  
-  function markImportantTask(taskId, isCompleted = false){
+  function markImportantTask(taskId, isCompleted = false, isImportant) {
     let copyOfTasks = isCompleted ? [...completedTasks] : [...tasks];
     const index = copyOfTasks.findIndex((item) => item.id === taskId);
     let importantTask = copyOfTasks.splice(index, 1)[0];
+    setNumberOfImportant((count) => {
+      return isImportant ? count + 1 : count - 1;
+    });
+
     copyOfTasks.splice(index, 0, {
       ...importantTask,
-      isImportant: !importantTask.isImportant,
+      isImportant: isImportant,
     });
-    isCompleted ? setCompletedTasks(copyOfTasks) : setTasks(copyOfTasks)
+    isCompleted ? setCompletedTasks(copyOfTasks) : setTasks(copyOfTasks);
+    
   }
 
   function handleChange(e) {
@@ -186,14 +167,13 @@ export default function TodoList(props) {
     setTaskPaneIsActive((prev) => !prev);
   }
 
-
   function drop(result, dropArea) {
-    console.log(result)
+    console.log(result);
     if (!result || result.destination === null) {
       return;
     }
-    let taskItemsCopy = dropArea === 'todos' ? [...tasks] : [...completedTasks];
-    let tasksSetter = dropArea === 'todos' ? setTasks : setCompletedTasks;
+    let taskItemsCopy = dropArea === "todos" ? [...tasks] : [...completedTasks];
+    let tasksSetter = dropArea === "todos" ? setTasks : setCompletedTasks;
     const [reorderedItem] = taskItemsCopy.splice(result.source.index, 1);
     taskItemsCopy.splice(result.destination.index, 0, reorderedItem);
     tasksSetter(taskItemsCopy);
@@ -202,7 +182,11 @@ export default function TodoList(props) {
   return (
     <div className={"flex-column w-1/3"}>
       <div className={"flex-column"}>
-        <DragDropContext onDragEnd={(result)=> {drop(result,'todos')}}>
+        <DragDropContext
+          onDragEnd={(result) => {
+            drop(result, "todos");
+          }}
+        >
           <Droppable droppableId="todos">
             {(provided) => (
               <ul
@@ -220,7 +204,11 @@ export default function TodoList(props) {
 
       {completedTasks.length > 0 && <h2>Completed</h2>}
       <div className={"flex-column"}>
-        <DragDropContext onDragEnd={(result) => {drop(result, 'completed')}}>
+        <DragDropContext
+          onDragEnd={(result) => {
+            drop(result, "completed");
+          }}
+        >
           <Droppable droppableId="completedTodos">
             {(provided) => (
               <ul

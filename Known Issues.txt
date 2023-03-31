@@ -5,3 +5,6 @@ we ran across the following issues:
 like in handleDeleteTask and drop. If this is not fixed, this could lead to potential conflicts in Id when switching between completed tasks and and the items list in our program.
 
 Update-- found a work around and am currently making sure to correctly insert elements when moving between completed and items in local storage
+
+
+*Major bug -- you have to separate the important tasks to have its own state
