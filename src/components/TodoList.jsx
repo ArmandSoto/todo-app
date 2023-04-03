@@ -45,7 +45,7 @@ export default function TodoList({
     return (
       <TaskCard
         key={task.id + task.name}
-        id={task.id + "2"} //remember to check what happens if we remove the 2
+        id={task.id} // removed the 2 so I think its okay to have id be duplicate
         name={task.name}
         removeFromTasks={removeFromTasks}
         editTask={handleEditTask}
@@ -64,7 +64,11 @@ export default function TodoList({
     setTasksFunction((prevTasks) => {
       const copyOfPrevTasks = [...prevTasks];
       const index = copyOfPrevTasks.findIndex((task) => task.id === taskId);
-      copyOfPrevTasks.splice(index, 1);
+      const deletedTask = copyOfPrevTasks.splice(index, 1)[0];
+      setNumberOfImportant(count => {
+        return deletedTask.isImportant ? count - 1 : count;
+      })
+
       return [...copyOfPrevTasks];
     });
   }
@@ -101,12 +105,17 @@ export default function TodoList({
     setTaskPaneIsActive((prev) => !prev);
   }
 
-  function handleSubmit(e) {
+  function handleSubmit(e, task) {
     e.preventDefault();
-    const hasKeyMatch = tasks.some((obj) => obj["id"] === currentTask.id);
+    let hasKeyMatch = task.isComplete
+      ? completedTasks.some((obj) => obj["id"] === currentTask.id)
+      : tasks.some((obj) => obj["id"] === currentTask.id);
 
+
+
+    let tasksSetter = task.isComplete ? setCompletedTasks : setTasks;
     if (hasKeyMatch) {
-      setTasks((prev) => {
+      tasksSetter((prev) => {
         const taskArray = prev.map((item) =>
           item.id === currentTask.id ? currentTask : item
         );
@@ -114,6 +123,7 @@ export default function TodoList({
       });
       setTaskPaneIsActive((prev) => !prev);
     } else {
+      
       addTask();
     }
 
@@ -126,12 +136,22 @@ export default function TodoList({
   }
 
   function handleEditTask(taskId) {
+    //we have to figure out which array to check based on how the index turns out
+    let copyOfTasks = null;
+
     if (taskId !== "") {
-      const index = tasks.findIndex((task) => task.id === taskId);
+      let index = tasks.findIndex((task) => task.id === taskId);
+
+      if (index < 0) {
+        index = completedTasks.findIndex((task) => task.id === taskId);
+        copyOfTasks = [...completedTasks];
+      } else {
+        copyOfTasks = [...tasks];
+      }
       setCurrentTask({
-        name: tasks[index].name,
-        id: tasks[index].id,
-        isComplete: false,
+        name: copyOfTasks[index].name,
+        id: copyOfTasks[index].id,
+        isComplete: copyOfTasks[index].isComplete,
         isImportant: false,
       });
       setTaskPaneIsActive((prev) => !prev);
@@ -140,7 +160,10 @@ export default function TodoList({
 
   function markImportantTask(taskId, isCompleted = false, isImportant) {
     let copyOfTasks = isCompleted ? [...completedTasks] : [...tasks];
-    const index = copyOfTasks.findIndex((item) => item.id === taskId);
+    const index = copyOfTasks.findIndex((item) => {
+      
+      return item.id === taskId;
+    });
     let importantTask = copyOfTasks.splice(index, 1)[0];
     setNumberOfImportant((count) => {
       return isImportant ? count + 1 : count - 1;
@@ -168,7 +191,6 @@ export default function TodoList({
   }
 
   function drop(result, dropArea) {
-    console.log(result);
     if (!result || result.destination === null) {
       return;
     }

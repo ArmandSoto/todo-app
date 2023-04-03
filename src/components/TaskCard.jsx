@@ -29,7 +29,7 @@ export default function TaskCard(props) {
     props.markImportantTask(props.id, isComplete, markedAsImportant)
   }
 
-  console.log(isImportant)
+  
 
   //remember to take a look at this index part because props.id will no longer be a number
   return (

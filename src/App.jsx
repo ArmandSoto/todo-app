@@ -57,6 +57,10 @@ function App() {
   }, [importantTasks]);
 
   useEffect(() => {
+    
+  }, [numberOfImportant])
+
+  useEffect(() => {
     localStorage.setItem(
       `Important Completed`,
       JSON.stringify(importantCompleted)
