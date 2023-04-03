@@ -8,3 +8,19 @@ Update-- found a work around and am currently making sure to correctly insert el
 
 
 *Major bug -- you have to separate the important tasks to have its own state
+-- solved --
+
+4/3/23
+
+-- KNOWN ISSUES --
+When marking something as important, the element marked will change position in the list.. this only happens in the completed part of the app
+-- solved -- 
+
+Editing a task throws an error
+
+-- solved --
+
+Make sure to update numberOfImportant when DELETING a task
+
+-- solved --
+
