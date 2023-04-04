@@ -24,3 +24,9 @@ Make sure to update numberOfImportant when DELETING a task
 
 -- solved --
 
+4/4/23
+
+Another issue is to make sure there are no duplicateswhen marking something as important and adding to the important list
+
+editing in one part of the progaam does not change it in both tabs
+

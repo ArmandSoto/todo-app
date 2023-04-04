@@ -6,8 +6,12 @@ export default function ImportantTasks({
   setTasks,
   completedTasks,
   setCompletedTasks,
+  otherTasks,
+  setOtherTasks,
+  otherCompleted,
+  setOtherCompleted,
   numberOfImportant,
-  setNumberOfImportant,
+  setNumberOfImportant
 }) {
   return (
     <div className="flex-col flex-grow items-center">
@@ -19,8 +23,13 @@ export default function ImportantTasks({
           setTasks={setTasks}
           completedTasks={completedTasks}
           setCompletedTasks={setCompletedTasks}
+          otherTasks={otherTasks}
+          setOtherTasks={setOtherTasks}
+          otherCompleted={otherCompleted}
+          setOtherCompleted={setOtherCompleted}
           numberOfImportant={numberOfImportant}
           setNumberOfImportant={setNumberOfImportant}
+          
         />
       </div>
     </div>

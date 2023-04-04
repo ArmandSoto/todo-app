@@ -12,8 +12,12 @@ export default function TodoList({
   setTasks,
   completedTasks,
   setCompletedTasks,
+  otherTasks,
+  setOtherTasks,
+  otherCompleted,
+  setOtherCompleted,
   numberOfImportant,
-  setNumberOfImportant,
+  setNumberOfImportant
 }) {
   const [taskPaneIsActive, setTaskPaneIsActive] = useState(false);
   const [currentTask, setCurrentTask] = useState({
@@ -61,16 +65,30 @@ export default function TodoList({
 
   function removeFromTasks(taskId, isCompleted = false) {
     const setTasksFunction = isCompleted ? setCompletedTasks : setTasks;
+    let deletedTask = null;
     setTasksFunction((prevTasks) => {
       const copyOfPrevTasks = [...prevTasks];
       const index = copyOfPrevTasks.findIndex((task) => task.id === taskId);
-      const deletedTask = copyOfPrevTasks.splice(index, 1)[0];
-      setNumberOfImportant(count => {
+      deletedTask = copyOfPrevTasks.splice(index, 1)[0];
+      setNumberOfImportant((count) => {
         return deletedTask.isImportant ? count - 1 : count;
-      })
-
+      });
       return [...copyOfPrevTasks];
     });
+    
+    if (deletedTask.isImportant){
+      //we know now it exists in two places
+      const otherSetterFunction = deletedTask.isComplete ? setOtherCompleted : setOtherTasks;
+      otherSetterFunction(prev => {
+        let copyOfTasks = [...prev];
+        copyOfTasks = copyOfTasks.filter(item => item.id !== deletedTask.id)
+        return copyOfTasks;
+      })
+      
+    }
+      else{
+      throw new Error("Something is wrong with deletion inimportant tasks")    
+    }
   }
 
   function updateTask(taskId, isComplete = false) {
@@ -111,8 +129,6 @@ export default function TodoList({
       ? completedTasks.some((obj) => obj["id"] === currentTask.id)
       : tasks.some((obj) => obj["id"] === currentTask.id);
 
-
-
     let tasksSetter = task.isComplete ? setCompletedTasks : setTasks;
     if (hasKeyMatch) {
       tasksSetter((prev) => {
@@ -123,7 +139,6 @@ export default function TodoList({
       });
       setTaskPaneIsActive((prev) => !prev);
     } else {
-      
       addTask();
     }
 
@@ -160,8 +175,8 @@ export default function TodoList({
 
   function markImportantTask(taskId, isCompleted = false, isImportant) {
     let copyOfTasks = isCompleted ? [...completedTasks] : [...tasks];
+    let tasksSetter = isCompleted ? setCompletedTasks : setTasks;
     const index = copyOfTasks.findIndex((item) => {
-      
       return item.id === taskId;
     });
     let importantTask = copyOfTasks.splice(index, 1)[0];
@@ -173,8 +188,12 @@ export default function TodoList({
       ...importantTask,
       isImportant: isImportant,
     });
-    isCompleted ? setCompletedTasks(copyOfTasks) : setTasks(copyOfTasks);
+
+    tasksSetter(copyOfTasks);
     
+    isCompleted
+      ? setOtherCompleted((prev) => [...prev, importantTask])
+      : setOtherTasks((prev) => [...prev, {...importantTask, isImportant: true}]);
   }
 
   function handleChange(e) {

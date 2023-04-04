@@ -18,10 +18,10 @@ function App() {
   const [sidebarIsOpen, setSidebarIsOpen] = useState(false);
   const [page, setPage] = useState("Inbox");
 
-  const [tasks, setTasks] = useState(
+  const [inbox, setInbox] = useState(
     JSON.parse(localStorage.getItem("Inbox")) || []
   );
-  const [completedTasks, setCompletedTasks] = useState(
+  const [completedInbox, setCompletedInbox] = useState(
     JSON.parse(localStorage.getItem(`Inbox Completed`)) || []
   );
 
@@ -45,12 +45,12 @@ function App() {
   }, [numberOfImportant]);
 
   useEffect(() => {
-    localStorage.setItem("Inbox", JSON.stringify(tasks));
-  }, [tasks]);
+    localStorage.setItem("Inbox", JSON.stringify(inbox));
+  }, [inbox]);
 
   useEffect(() => {
-    localStorage.setItem(`Inbox Completed`, JSON.stringify(completedTasks));
-  }, [completedTasks]);
+    localStorage.setItem(`Inbox Completed`, JSON.stringify(completedInbox));
+  }, [completedInbox]);
 
   useEffect(() => {
     localStorage.setItem("Important", JSON.stringify(importantTasks));
@@ -95,10 +95,14 @@ function App() {
           {page === "Inbox" && (
             <TodoList
               page={page}
-              tasks={tasks}
-              setTasks={setTasks}
-              completedTasks={completedTasks}
-              setCompletedTasks={setCompletedTasks}
+              tasks={inbox}
+              setTasks={setInbox}
+              completedTasks={completedInbox}
+              setCompletedTasks={setCompletedInbox}
+              otherTasks={importantTasks}
+              setOtherTasks={setImportantTasks}
+              otherCompleted={importantCompleted}
+              setOtherCompletd={setImportantCompleted}
               numberOfImportant={numberOfImportant}
               setNumberOfImportant={setNumberOfImportant}
             />
@@ -110,6 +114,10 @@ function App() {
               setTasks={setImportantTasks}
               completedTasks={importantCompleted}
               setCompletedTasks={setImportantCompleted}
+              otherTasks={inbox}
+              setOtherTasks={setInbox}
+              otherCompleted={completedInbox}
+              setOtherCompleted={setCompletedInbox}
               numberOfImportant={numberOfImportant}
               setNumberOfImportant={setNumberOfImportant}
             />
