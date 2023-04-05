@@ -275,7 +275,7 @@ export default function TodoList({
           <>
             <PlusCircleIcon
               onClick={handleClick}
-              className="h-10 w-10 text-emerald-400"
+              className="h-10 w-10 mt-2 text-emerald-400 animate-pulse"
             />
             <p className={tasks.length > 0 ? "hidden" : "leading-10 ml-5"}>
               You have no tasks currently

@@ -82,7 +82,7 @@ function App() {
 
   return (
     <main className="text-base font-extralight tracking-wide overflow-hidden h-screen">
-      <Header currentTheme={currentTheme} toggleSidebar={toggleSidebar} />
+      <Header currentTheme={currentTheme} toggleSidebar={toggleSidebar} isOpen={sidebarIsOpen} />
 
       <div className="flex h-full">
         <Sidebar
@@ -92,7 +92,7 @@ function App() {
           changeTheme={changeTheme}
         />
 
-        <section className="flex flex-grow justify-center p-6 border-2">
+        <section className="flex flex-grow bg-slate-200 justify-center p-6 border-2">
         
         
           {page === "Inbox" && (

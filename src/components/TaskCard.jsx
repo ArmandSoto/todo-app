@@ -40,7 +40,7 @@ export default function TaskCard(props) {
     >
       {(provided) => (
         <div
-          className="border-2 shadow-lg rounded-lg my-2 p-4 transition ease-in-out delay-100 hover:-translate-y-1 hover:scale-110"
+          className="border-2 shadow-lg rounded bg-white my-2 p-4 transition ease-in-out delay-100 hover:-translate-y-1 hover:scale-110"
           {...provided.draggableProps}
           {...provided.dragHandleProps}
           ref={provided.innerRef}
