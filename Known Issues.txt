@@ -34,3 +34,6 @@ editing in one part of the progaam does not change it in both tabs
 
 Deal with scrollable when the number of tasks grows too large
 
+4/5/23
+Check the logic for marking something as unimportant an item it creates a duplicate in the other part of the application
+

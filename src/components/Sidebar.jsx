@@ -1,9 +1,9 @@
-import {InboxIcon} from "@heroicons/react/24/outline"
+import { InboxIcon, StarIcon } from "@heroicons/react/24/outline";
 
 export default function Sidebar(props) {
   let listItemStyle = `${
     props.isOpen ? "cursor-pointer p-2 translate-x-1" : "-translate-x-72"
-  } p-2 transition delay-100 ease-in-out text-xl`;
+  } p-2 transition delay-100 ease-in-out text-xl flex justify-around items-center`;
 
   const themeColorItems = props.themeColors.map((item, index) => (
     <button
@@ -23,19 +23,20 @@ export default function Sidebar(props) {
         <li
           className={listItemStyle}
           onClick={(event) => {
-            props.changePage(event.target.innerHTML);
+            props.changePage(event.target.textContent);
           }}
         >
           Inbox
-          <InboxIcon className="inline stroke-slate-400 h-6 w-6"/>
+          <InboxIcon className="ml-auto align-bottom stroke-slate-400 h-6 w-6" />
         </li>
         <li
           className={`${listItemStyle}`}
           onClick={(event) => {
-            props.changePage(event.target.innerHTML);
+            props.changePage(event.target.textContent);
           }}
         >
           Important
+          <StarIcon className="ml-auto align-bottom stroke-slate-400 h-6 w-6" />
         </li>
       </ul>
       <div
