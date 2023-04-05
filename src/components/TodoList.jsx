@@ -27,6 +27,8 @@ export default function TodoList({
     isImportant: false,
   });
 
+  const [inputIsFocused, setInputIsFocused] = useState(false);
+
   const taskComponents = tasks.map((task, index) => {
     return (
       <TaskCard
@@ -49,7 +51,7 @@ export default function TodoList({
     return (
       <TaskCard
         key={task.id + task.name}
-        id={task.id} // removed the 2 so I think its okay to have id be duplicate
+        id={task.id}
         name={task.name}
         removeFromTasks={removeFromTasks}
         editTask={handleEditTask}
@@ -86,9 +88,7 @@ export default function TodoList({
       })
       
     }
-      else{
-      throw new Error("Something is wrong with deletion inimportant tasks")    
-    }
+
   }
 
   function updateTask(taskId, isComplete = false) {
@@ -110,6 +110,10 @@ export default function TodoList({
     if (taskPaneIsActive) {
       setTaskPaneIsActive((prev) => !prev);
     }
+  }
+
+  function handleInputFocus() {
+    setInputIsFocused(true)
   }
 
   //consider calling this createNewTask
@@ -151,7 +155,7 @@ export default function TodoList({
   }
 
   function handleEditTask(taskId) {
-    //we have to figure out which array to check based on how the index turns out
+    
     let copyOfTasks = null;
 
     if (taskId !== "") {
@@ -222,6 +226,7 @@ export default function TodoList({
 
   return (
     <div className={"flex-column w-1/3"}>
+      
       <div className={"flex-column"}>
         <DragDropContext
           onDragEnd={(result) => {
@@ -282,6 +287,9 @@ export default function TodoList({
               handleSubmit={handleSubmit}
               handleChange={handleChange}
               currentTask={currentTask}
+              inputIsFocused={inputIsFocused}
+              setInputIsFocused={setInputIsFocused}
+              handleInputFocus={handleInputFocus}
             />
           </>
         )}

@@ -4,6 +4,7 @@ import TodoList from "./components/TodoList";
 import Header from "./components/Header";
 import Sidebar from "./components/Sidebar";
 import ImportantTasks from "./components/ImportantTasks";
+import Inbox from "./components/Inbox";
 import "./App.css";
 
 function App() {
@@ -91,9 +92,11 @@ function App() {
           changeTheme={changeTheme}
         />
 
-        <section className="flex flex-grow justify-center p-8 border-2">
+        <section className="flex flex-grow justify-center p-6 border-2">
+        
+        
           {page === "Inbox" && (
-            <TodoList
+            <Inbox
               page={page}
               tasks={inbox}
               setTasks={setInbox}

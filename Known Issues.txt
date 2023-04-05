@@ -30,3 +30,7 @@ Another issue is to make sure there are no duplicateswhen marking something as i
 
 editing in one part of the progaam does not change it in both tabs
 
+4/5/23
+
+Deal with scrollable when the number of tasks grows too large
+
