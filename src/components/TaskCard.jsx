@@ -22,11 +22,11 @@ export default function TaskCard(props) {
   }
 
   function markAsImportantHandler(){
-    let markedAsImportant = !isImportant
+    // let markedAsImportant = !isImportant
 
     setIsImportant(prev => !prev)
 
-    props.markImportantTask(props.id, isComplete, markedAsImportant)
+    props.markImportantTask(props.id, isComplete, isImportant)
   }
 
   

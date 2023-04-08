@@ -17,7 +17,7 @@ export default function TodoList({
   otherCompleted,
   setOtherCompleted,
   numberOfImportant,
-  setNumberOfImportant
+  setNumberOfImportant,
 }) {
   const [taskPaneIsActive, setTaskPaneIsActive] = useState(false);
   const [currentTask, setCurrentTask] = useState({
@@ -77,18 +77,18 @@ export default function TodoList({
       });
       return [...copyOfPrevTasks];
     });
-    
-    if (deletedTask.isImportant){
-      //we know now it exists in two places
-      const otherSetterFunction = deletedTask.isComplete ? setOtherCompleted : setOtherTasks;
-      otherSetterFunction(prev => {
-        let copyOfTasks = [...prev];
-        copyOfTasks = copyOfTasks.filter(item => item.id !== deletedTask.id)
-        return copyOfTasks;
-      })
-      
-    }
 
+    if (deletedTask.isImportant) {
+      //we know now it exists in two places
+      const otherSetterFunction = deletedTask.isComplete
+        ? setOtherCompleted
+        : setOtherTasks;
+      otherSetterFunction((prev) => {
+        let copyOfTasks = [...prev];
+        copyOfTasks = copyOfTasks.filter((item) => item.id !== deletedTask.id);
+        return copyOfTasks;
+      });
+    }
   }
 
   function updateTask(taskId, isComplete = false) {
@@ -113,15 +113,18 @@ export default function TodoList({
   }
 
   function handleInputFocus() {
-    setInputIsFocused(true)
+    setInputIsFocused(true);
   }
 
   //consider calling this createNewTask
   function addTask() {
     if (currentTask.name.trim().length > 0) {
-      currentTask.id = nanoid();
+      let copyOfCurrentTask =
+        page === "Important"
+          ? { ...currentTask, id: nanoid(), isImportant: true }
+          : { ...currentTask, id: nanoid() };
       setTasks((prevTasks) => {
-        return [...prevTasks, currentTask];
+        return [...prevTasks, copyOfCurrentTask];
       });
     }
     setTaskPaneIsActive((prev) => !prev);
@@ -144,6 +147,9 @@ export default function TodoList({
       setTaskPaneIsActive((prev) => !prev);
     } else {
       addTask();
+      if (page === "Important") {
+        setNumberOfImportant((prevCount) => prevCount + 1);
+      }
     }
 
     setCurrentTask({
@@ -155,7 +161,6 @@ export default function TodoList({
   }
 
   function handleEditTask(taskId) {
-    
     let copyOfTasks = null;
 
     if (taskId !== "") {
@@ -177,27 +182,35 @@ export default function TodoList({
     }
   }
 
-  function markImportantTask(taskId, isCompleted = false, isImportant) {
-    let copyOfTasks = isCompleted ? [...completedTasks] : [...tasks];
-    let tasksSetter = isCompleted ? setCompletedTasks : setTasks;
-    const index = copyOfTasks.findIndex((item) => {
-      return item.id === taskId;
-    });
-    let importantTask = copyOfTasks.splice(index, 1)[0];
-    setNumberOfImportant((count) => {
-      return isImportant ? count + 1 : count - 1;
-    });
+  function markImportantTask(taskId, isComplete = false) {
+    let copyOfTasks = isComplete ? [...completedTasks] : [...tasks];
+    let tasksSetter = isComplete ? setCompletedTasks : setTasks;
+    let copyOfOtherTasks = isComplete ? [...otherCompleted] : [...otherTasks];
+    let otherTasksSetter = isComplete ? setOtherCompleted : setOtherTasks;
 
-    copyOfTasks.splice(index, 0, {
-      ...importantTask,
-      isImportant: isImportant,
-    });
+    let taskIndex = copyOfTasks.findIndex((task) => task.id === taskId);
+    let otherIndex = copyOfOtherTasks.findIndex((task) => task.id === taskId);
+    let flippedTask = copyOfTasks.splice(taskIndex, 1)[0];
+    flippedTask = { ...flippedTask, isImportant: !flippedTask.isImportant };
 
+    if (flippedTask.isImportant) {
+      setNumberOfImportant((prevNumber) => prevNumber + 1);
+    } else {
+      setNumberOfImportant((prevNumber) => prevNumber - 1);
+    }
+
+    if (otherIndex >= 0) {
+      copyOfOtherTasks[otherIndex] = flippedTask;
+    } else {
+      if (page === "Important") {
+        flippedTask = { ...flippedTask, isImportant: false };
+      }
+      copyOfOtherTasks.push(flippedTask);
+    }
+
+    //we need to make sure that when we add something via the important page that it is automatically flagged as important
     tasksSetter(copyOfTasks);
-    
-    isCompleted
-      ? setOtherCompleted((prev) => [...prev, importantTask])
-      : setOtherTasks((prev) => [...prev, {...importantTask, isImportant: true}]);
+    otherTasksSetter(copyOfOtherTasks);
   }
 
   function handleChange(e) {
@@ -226,7 +239,6 @@ export default function TodoList({
 
   return (
     <div className={"flex-column w-1/3"}>
-      
       <div className={"flex-column"}>
         <DragDropContext
           onDragEnd={(result) => {
